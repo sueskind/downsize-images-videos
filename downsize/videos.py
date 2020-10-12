@@ -5,6 +5,11 @@ import ffmpeg
 
 from .utils import log, format_timedelta, format_size
 
+ffmpeg_global_args = ("-y",
+                      "-hide_banner",
+                      "-loglevel", "panic",
+                      "-movflags", "use_metadata_tags",
+                      "-map_metadata", "0")
 
 def get_video_metadata(path):
     try:
@@ -34,7 +39,7 @@ def convert_video(in_path, out_path, filename, bitrate_factor, fallback_crf, try
          .output(out_path,
                  vcodec="libx264",
                  crf=fallback_crf)
-         .global_args("-y", "-hide_banner", "-loglevel", "panic")
+         .global_args(*ffmpeg_global_args)
          .run())
         elapsed = time.time() - start_time
         in_size = os.path.getsize(in_path)
@@ -63,7 +68,7 @@ def convert_video(in_path, out_path, filename, bitrate_factor, fallback_crf, try
                  .output(out_path,
                          vcodec="h264_nvenc",
                          b=b, maxrate=maxrate, bufsize=bufsize)
-                 .global_args("-y", "-hide_banner", "-loglevel", "panic")
+                 .global_args(*ffmpeg_global_args)
                  .run())
                 elapsed = time.time() - start_time
                 out_size = os.path.getsize(out_path)
@@ -83,7 +88,7 @@ def convert_video(in_path, out_path, filename, bitrate_factor, fallback_crf, try
          .output(out_path,
                  vcodec="libx264",
                  b=b, maxrate=maxrate, bufsize=bufsize)
-         .global_args("-y", "-hide_banner", "-loglevel", "panic")
+         .global_args(*ffmpeg_global_args)
          .run())
         elapsed = time.time() - start_time
         out_size = os.path.getsize(out_path)
