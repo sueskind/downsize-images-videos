@@ -1,4 +1,5 @@
 import os
+import shutil
 import time
 
 import ffmpeg
@@ -10,6 +11,7 @@ ffmpeg_global_args = ("-y",
                       "-loglevel", "panic",
                       "-movflags", "use_metadata_tags",
                       "-map_metadata", "0")
+
 
 def get_video_metadata(path):
     try:
@@ -28,7 +30,7 @@ def get_video_metadata(path):
         return None
 
 
-def convert_video(in_path, out_path, filename, bitrate_factor, fallback_crf, try_gpu):
+def convert_video(in_path, out_path, filename, bitrate_factor, fallback_crf, try_gpu, copy_size_increased):
     meta_in = get_video_metadata(in_path)
 
     if not meta_in:  # probe failed
@@ -44,6 +46,12 @@ def convert_video(in_path, out_path, filename, bitrate_factor, fallback_crf, try
         elapsed = time.time() - start_time
         in_size = os.path.getsize(in_path)
         meta_out = get_video_metadata(out_path)
+
+        if copy_size_increased and meta_out["size"] > in_size:
+            log(f"Converted {filename}, size increased ({format_size(in_size)} -> {format_size(meta_out['size'])}), "
+                "copying original")
+            shutil.copy2(in_path, out_path)
+            return in_size, in_size, elapsed, meta_out["duration"]
 
         return in_size, meta_out["size"], elapsed, meta_out["duration"]
 
@@ -73,6 +81,12 @@ def convert_video(in_path, out_path, filename, bitrate_factor, fallback_crf, try
                 elapsed = time.time() - start_time
                 out_size = os.path.getsize(out_path)
 
+                if copy_size_increased and out_size > meta_in["size"]:
+                    log(f"Converted {filename}, size increased ({format_size(meta_in['size'])} -> "
+                        f"{format_size(out_size)}), copying original")
+                    shutil.copy2(in_path, out_path)
+                    return meta_in["size"], meta_in["size"], elapsed, meta_in["duration"]
+
                 return meta_in["size"], out_size, elapsed, meta_in["duration"]
 
             except Exception:  # Sometimes h264 not applicable to gpu
@@ -92,5 +106,11 @@ def convert_video(in_path, out_path, filename, bitrate_factor, fallback_crf, try
          .run())
         elapsed = time.time() - start_time
         out_size = os.path.getsize(out_path)
+
+        if copy_size_increased and out_size > meta_in["size"]:
+            log(f"Converted {filename}, size increased ({format_size(meta_in['size'])} -> "
+                f"{format_size(out_size)}), copying original")
+            shutil.copy2(in_path, out_path)
+            return meta_in["size"], meta_in["size"], elapsed, meta_in["duration"]
 
         return meta_in["size"], out_size, elapsed, meta_in["duration"]

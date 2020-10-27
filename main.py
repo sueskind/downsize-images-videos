@@ -47,7 +47,8 @@ if __name__ == '__main__':
             pool = Pool()
             try:
                 task = [generate_paths(parent, out_dir, filename, config.OUTPUT_SUFFIX, config.OUTPUT_FORMAT_IMAGE)
-                        + (config.OUTPUT_IMAGE_QUALITY, config.OUTPUT_IMAGE_MAX_DIM, config.OUTPUT_OVERWRITE)
+                        + (config.OUTPUT_IMAGE_QUALITY, config.OUTPUT_IMAGE_MAX_DIM, config.OUTPUT_OVERWRITE,
+                           config.COPY_IF_SIZE_INCREASED)
                         for filename in image_files]
                 res = pool.starmap(convert_image, task)
                 in_size_images += sum(r[0] for r in res if r)
@@ -66,7 +67,8 @@ if __name__ == '__main__':
                         in_size, out_size, elapsed, duration = convert_video(in_path, out_path, filename,
                                                                              config.OUTPUT_VIDEO_BITRATE_FACTOR,
                                                                              config.OUTPUT_VIDEO_FALLBACK_CRF,
-                                                                             config.ENABLE_GPU)
+                                                                             config.ENABLE_GPU,
+                                                                             config.COPY_IF_SIZE_INCREASED)
 
                         log(f"Converted {out_name} {format_size(in_size)} -> {format_size(out_size)} "
                             f"({out_size / in_size:.2%}), took {format_timedelta(elapsed)} "

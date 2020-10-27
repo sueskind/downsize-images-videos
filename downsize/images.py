@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import piexif
 from PIL import Image
@@ -6,7 +7,7 @@ from PIL import Image
 from .utils import log, format_size
 
 
-def convert_image(in_path, out_path, filename, quality, max_dim, overwrite):
+def convert_image(in_path, out_path, filename, quality, max_dim, overwrite, copy_size_increased):
     if not overwrite and os.path.exists(out_path):
         return 0, 0
 
@@ -37,9 +38,15 @@ def convert_image(in_path, out_path, filename, quality, max_dim, overwrite):
             img.save(out_path, optimize=True, quality=quality)
 
         out_size = os.path.getsize(out_path)
-        log(f"Converted {filename} {format_size(in_size)} -> {format_size(out_size)} ({out_size / in_size:.2%})")
 
-        return in_size, out_size
+        if copy_size_increased and out_size > in_size:
+            log(f"Converted {filename}, size increased ({format_size(in_size)} -> {format_size(out_size)}), "
+                "copying original")
+            shutil.copy2(in_path, out_path)
+            return in_size, in_size
+        else:
+            log(f"Converted {filename} {format_size(in_size)} -> {format_size(out_size)} ({out_size / in_size:.2%})")
+            return in_size, out_size
 
     except Exception:
         log(f"ERROR on {in_path}")
