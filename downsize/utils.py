@@ -24,6 +24,6 @@ def format_size(bytes):
     elif bytes < 1024 * 1024:
         return f"{bytes // 1024} KB"
     elif bytes < 1024 * 1024 * 1024:
-        return f"{bytes // 1024 // 1024} MB"
+        return f"{bytes / 1024 / 1024:.1f} MB"
     else:
-        return f"{bytes // 1024 // 1024 // 1024} GB"
+        return f"{bytes / 1024 / 1024 / 1024:.1f} GB"
