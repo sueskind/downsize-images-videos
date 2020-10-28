@@ -1,6 +1,8 @@
 import datetime as dt
 import os
 
+from .constants import LOGS_STDOUT_FILE
+
 
 def generate_paths(parent, out_dir, filename, suffix, new_format):
     in_path = os.path.join(parent, filename)
@@ -11,7 +13,10 @@ def generate_paths(parent, out_dir, filename, suffix, new_format):
 
 
 def log(message):
-    print(f"{dt.datetime.now().strftime('%X')} {message}")
+    msg = f"{dt.datetime.now().strftime('%X')} {message}"
+    with open(LOGS_STDOUT_FILE, "wa") as f:
+        f.write(msg + "\n")
+    print(msg)
 
 
 def format_timedelta(seconds):

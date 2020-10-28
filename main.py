@@ -78,12 +78,12 @@ if __name__ == '__main__':
                         out_size_videos += out_size
 
                     except Exception as e:
-                        log(e)
+                        log(f"ERROR {in_path}: {e}")
                         # Remove half-converted file
                         if os.path.exists(out_path):
                             os.remove(out_path)
                     except KeyboardInterrupt as e:
-                        log(e)
+                        log(f"ERROR {in_path}: {e}")
                         if os.path.exists(out_path):
                             os.remove(out_path)
                         sys.exit()
