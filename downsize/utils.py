@@ -14,7 +14,7 @@ def generate_paths(parent, out_dir, filename, suffix, new_format):
 
 def log(message):
     msg = f"{dt.datetime.now().strftime('%X')} {message}"
-    with open(LOGS_STDOUT_FILE, "wa") as f:
+    with open(LOGS_STDOUT_FILE, "a") as f:
         f.write(msg + "\n")
     print(msg)
 
