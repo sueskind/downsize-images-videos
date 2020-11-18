@@ -11,7 +11,7 @@ Image conversion is parallelized on the CPU and if available, H.264 en-/decoding
 
 ## Installation
 
-Prerequisites (must be installed):
+Prerequisites (must be installed separately):
  - [Python 3](https://www.python.org/) (Tested with Python 3.8 64-Bit)
  - [FFmpeg](https://ffmpeg.org/)
 
